@@ -1,0 +1,23 @@
+{
+  "name": "youtube-archiver",
+  "version": "1.0.0",
+  "description": "An easy and quick way to archive YouTube videos through a web interface.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hwgilbert16/youtube-archiver.git"
+  },
+  "author": "Harrison Gilbert",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hwgilbert16/youtube-archiver/issues"
+  },
+  "homepage": "https://github.com/hwgilbert16/youtube-archiver#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ytdl-core": "^4.8.2"
+  }
+}
