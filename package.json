@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/hwgilbert16/youtube-archiver#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "pug": "^3.0.2",
     "ytdl-core": "^4.8.2"
   }
 }
