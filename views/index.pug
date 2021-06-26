@@ -1,0 +1,13 @@
+doctype html
+html
+    head
+        title YouTube Video Archiver
+    body
+        h1 YouTube Video Archiver
+        p Videos will be saved to:
+        form(action='/save', method='post')
+            label Enter the video URL
+            br
+            input(type='text', name='videoURL', placeholder='Video URL')
+            br
+            button(type='submit') Save Video
