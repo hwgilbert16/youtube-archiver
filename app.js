@@ -8,11 +8,6 @@ const filterObject = require('filter-obj');
 app.use(bodyParser.urlencoded({extended: false}));
 app.set('view engine', 'pug');
 
-async function getVideoInfo(url) {
-    const info = await ytdl.getBasicInfo(url);
-    return info;
-}
-
 app.get('/', (req, res) => {
     res.render('index');
 });
@@ -20,13 +15,19 @@ app.get('/', (req, res) => {
 app.post('/save', (req, res) => {
     const url = req.body.videoURL;
 
-    getVideoInfo(url).then((info) => {
-        let qualityOptions = info.player_response.streamingData.adaptiveFormats;
+    ytdl.getBasicInfo(url).then((info) => {
+        let qualityOptionsRaw = info.player_response.streamingData.adaptiveFormats;
+        let qualityOptions = [];
 
-        for (let i = 0; i < qualityOptions.length; i++) {
-            const filtered = filterObject(qualityOptions[i], ['mimeType']);
-            console.log(filtered);
+        for (let i = 0; i < qualityOptionsRaw.length; i++) {
+            const filtered = filterObject(qualityOptionsRaw[i], ['mimeType', 'qualityLabel']);
+
+            if (filtered.mimeType.includes('video/mp4')) {
+                qualityOptions.push(filtered.qualityLabel);
+            }
+
         }
+        console.dir(qualityOptions);
 
         res.send('successful');
     });
