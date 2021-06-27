@@ -2,13 +2,19 @@ doctype html
 html
     head
         title YouTube Video Archiver
+        link(rel="stylesheet" href="main.css")
     body
         h1 YouTube Video Archiver
         form(id="search")
             label Enter the video URL
             br
+            br
             input(type='text', name='videoURL', placeholder='Video URL')
             br
-            button(type='submit') Save Video
+            br
+            button(type='submit') Search Video
+            br
+            br
+        div(id="results")
         script(src="https://code.jquery.com/jquery-3.6.0.min.js")
         script(src="search.js")

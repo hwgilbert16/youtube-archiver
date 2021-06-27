@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-app.post('/save', (req, res) => {
+app.post('/search', (req, res) => {
     const url = req.body.videoURL;
     console.dir(req.body);
 
@@ -47,9 +47,6 @@ app.post('/save', (req, res) => {
             videoThumbnail: videoDetails.thumbnail.thumbnails[videoDetails.thumbnail.thumbnails.length - 1].url,
             videoQualityOptions: qualityOptions
         };
-
-        // temporary response to prevent browser from hanging
-        //res.send('successful');
 
         res.json(videoInfo);
     });

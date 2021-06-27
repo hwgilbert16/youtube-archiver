@@ -1,0 +1,8 @@
+body {
+    text-align: center;
+    font-family: Verdana, sans-serif;
+}
+
+#search input {
+    width: 25%;
+}
