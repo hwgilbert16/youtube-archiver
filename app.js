@@ -19,7 +19,6 @@ app.get('/', (req, res) => {
 
 app.post('/search', (req, res) => {
     const url = req.body.videoURL;
-    console.dir(req.body);
 
     ytdl.getBasicInfo(url).then((info) => {
         // get the adaptiveFormats section from the getBasicInfo response
@@ -49,6 +48,12 @@ app.post('/search', (req, res) => {
         };
 
         res.json(videoInfo);
+    }).catch(() => {
+        const eMessage = {
+            "error": "error_encountered"
+        };
+
+        res.json(eMessage)
     });
 
 })
