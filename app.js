@@ -18,8 +18,9 @@ app.post('/save', (req, res) => {
     const url = req.body.videoURL;
 
     ytdl.getBasicInfo(url).then((info) => {
-        // get the adaptiveformats section from the getBasicInfo response
+        // get the adaptiveFormats section from the getBasicInfo response
         let qualityOptionsRaw = info.player_response.streamingData.adaptiveFormats;
+        const videoDetails = info.player_response.videoDetails;
         let qualityOptions = [];
 
         // loop through each quality option to filter
@@ -28,10 +29,19 @@ app.post('/save', (req, res) => {
 
             // check if it is mp4
             if (filtered.mimeType.includes('video/mp4')) {
+                // add quality to qualityOptions array if matches filter
                 qualityOptions.push(filtered.qualityLabel);
             }
 
         }
+
+        // pack together all of the video info
+        const videoInfo = {
+            videoTitle: videoDetails.title,
+            videoAuthor: videoDetails.author,
+            videoThumbnail: videoDetails.thumbnail.thumbnails[videoDetails.thumbnail.thumbnails.length - 1].url,
+            videoQualityOptions: qualityOptions
+        };
 
         // temporary response to prevent browser from hanging
         res.send('successful');
