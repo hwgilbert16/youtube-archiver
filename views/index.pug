@@ -9,12 +9,14 @@ html
             label Enter the video URL
             br
             br
-            input(type='text', name='videoURL', placeholder='Video URL')
+            input(type='text', name='videoURL', placeholder='Video URL' required)
             br
             br
             button(type='submit') Search Video
             br
             br
         div(id="results")
+        div(id="options")
+            ul(id="qualityList")
         script(src="https://code.jquery.com/jquery-3.6.0.min.js")
         script(src="search.js")
