@@ -25,12 +25,14 @@ app.post('/save', (req, res) => {
 
         // loop through each quality option to filter
         for (let i = 0; i < qualityOptionsRaw.length; i++) {
-            const filtered = filterObject(qualityOptionsRaw[i], ['mimeType', 'qualityLabel']);
+            // filter response to only include mimeType and qualityLabel
+            const filtered = filterObject(qualityOptionsRaw[i], ['mimeType', 'qualityLabel', 'itag']);
 
             // check if it is mp4
             if (filtered.mimeType.includes('video/mp4')) {
                 // add quality to qualityOptions array if matches filter
-                qualityOptions.push(filtered.qualityLabel);
+                //qualityOptions.push(filtered);
+                qualityOptions.push({"itag": filtered.itag, "qualityLabel": filtered.qualityLabel});
             }
 
         }
