@@ -7,6 +7,9 @@ const filterObject = require('filter-obj');
 
 // middleware for getting post data from the body in req
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json())
+
+app.use(express.static('public'))
 app.set('view engine', 'pug');
 
 // render root page
@@ -16,6 +19,7 @@ app.get('/', (req, res) => {
 
 app.post('/save', (req, res) => {
     const url = req.body.videoURL;
+    console.dir(req.body);
 
     ytdl.getBasicInfo(url).then((info) => {
         // get the adaptiveFormats section from the getBasicInfo response
@@ -31,7 +35,6 @@ app.post('/save', (req, res) => {
             // check if it is mp4
             if (filtered.mimeType.includes('video/mp4')) {
                 // add quality to qualityOptions array if matches filter
-                //qualityOptions.push(filtered);
                 qualityOptions.push({"itag": filtered.itag, "qualityLabel": filtered.qualityLabel});
             }
 
@@ -46,7 +49,9 @@ app.post('/save', (req, res) => {
         };
 
         // temporary response to prevent browser from hanging
-        res.send('successful');
+        //res.send('successful');
+
+        res.json(videoInfo);
     });
 
 })

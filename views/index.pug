@@ -4,10 +4,11 @@ html
         title YouTube Video Archiver
     body
         h1 YouTube Video Archiver
-        p Videos will be saved to:
-        form(action='/save', method='post')
+        form(id="search")
             label Enter the video URL
             br
             input(type='text', name='videoURL', placeholder='Video URL')
             br
             button(type='submit') Save Video
+        script(src="https://code.jquery.com/jquery-3.6.0.min.js")
+        script(src="search.js")
