@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 app.post('/search', (req, res) => {
     const url = req.body.videoURL;
 
-    ytdl.getBasicInfo(url).then((info) => {
+    ytdl.getBasicInfo(url, {filter: 'videoonly'}).then((info) => {
         // get the adaptiveFormats section from the getBasicInfo response
         let qualityOptionsRaw = info.player_response.streamingData.adaptiveFormats;
         const videoDetails = info.player_response.videoDetails;
