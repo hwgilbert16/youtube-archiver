@@ -12,7 +12,7 @@ $('#search').submit((e) => {
         contentType: 'application/json',
         dataType: 'json',
         url: '/search',
-        beforeSend: addLoadingGif,
+        beforeSend: whileLoading,
         success: renderReceivedData
     }).done(() => {
         // removes loading gif once data is received
@@ -27,6 +27,8 @@ $(document).ajaxError((e) => {
 
 // renders received data from server
 function renderReceivedData(data) {
+    $('#searchButton').show();
+
     if (data.videoThumbnail) {
         const img = new Image(640, 360)
         img.src = data.videoThumbnail;
@@ -42,26 +44,31 @@ function renderReceivedData(data) {
         $("#results").append(document.createElement('hr'));
         $("#qualityList").append(document.createElement('p').textContent = "Download Options", br);
 
-        console.dir(data);
-
         // loop to output download options
         for (let i = 0; i < data.videoQualityOptions.length; i++) {
             const button = document.createElement('button');
             button.textContent = data.videoQualityOptions[i].qualityLabel;
             button.id = data.videoQualityOptions[i].itag;
-            button.className = data.videoQualityOptions[i].mimeType;
             $('#qualityList').append(button);
         }
 
         addButtonClickHandlers(data);
-    } else {
-
     }
 }
 
-// renders loading gif while video info is loading
-function addLoadingGif() {
-    const loadingGif = new Image();
+function whileLoading() {
+    // remove previous rendered data if it exists
+    if ($('hr')) {
+        $('#results').empty();
+        $('#qualityList').empty();
+    }
+
+    // hides search button while video is loading
+
+    $('#searchButton').hide();
+
+    // renders loading gif while video info is loading
+    const loadingGif = new Image(220.5, 145.5);
     loadingGif.src = 'loading.gif';
     loadingGif.setAttribute('id', 'loadingGif');
 

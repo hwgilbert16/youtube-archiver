@@ -1,12 +1,10 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const fs = require('fs');
 const ytdl = require('ytdl-core');
 const filterObject = require('filter-obj');
 const ffmpeg = require('ffmpeg-static');
 const cp = require('child_process');
-
 // middleware for getting post data from the body in req
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json())
@@ -34,7 +32,7 @@ app.post('/search', (req, res) => {
             const filtered = filterObject(qualityOptionsRaw[i], ['mimeType', 'qualityLabel', 'itag']);
 
             // check if it is mp4
-            if (filtered.mimeType.includes('video/mp4')) {
+            if (filtered.mimeType.includes('video/mp4') || filtered.mimeType.includes('av01')) {
                 // add quality to qualityOptions array if matches filter
                 qualityOptions.push({"itag": filtered.itag, "qualityLabel": filtered.qualityLabel, "mimeType": filtered.mimeType});
             }
@@ -63,13 +61,12 @@ app.post('/search', (req, res) => {
 app.post('/save', (req, res) => {
     const url = req.body.videoURL;
     const itag = req.body.videoItag;
-    const title = encodeURI(req.body.videoTitle);
+    const fileName = req.body.videoName;
+
+    //const fileName = crypto.randomBytes(5).toString('hex');
 
     const video = ytdl(url, {quality: itag});
-    //video.pipe(fs.createWriteStream('video.mp4'));
-
     const audio = ytdl(url, {quality: 'highestaudio', filter: 'audioonly'});
-    //audio.pipe(fs.createWriteStream('audio.mp4'));
 
     const ffmpegProcess = cp.spawn(ffmpeg, [
         // Remove ffmpeg's console spamming
@@ -86,7 +83,7 @@ app.post('/save', (req, res) => {
         '-c:v', 'copy',
         // Define output file
         //'out.mkv',
-        `${title}.mkv`
+        `videos/${fileName}.mkv`
     ], {
         windowsHide: true,
         stdio: [

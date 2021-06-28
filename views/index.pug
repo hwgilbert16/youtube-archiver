@@ -5,6 +5,8 @@ html
         link(rel="stylesheet" href="main.css")
     body
         h1 YouTube Video Archiver
+        p Make sure the video is public and the URL is correct
+        br
         form(id="search")
             label Enter the video URL
             br
@@ -12,7 +14,7 @@ html
             input(type='text', name='videoURL', placeholder='Video URL' required)
             br
             br
-            button(type='submit') Search for Video
+            button(type='submit', id='searchButton') Search for Video
             br
             br
         div(id="results")
