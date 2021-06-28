@@ -49,6 +49,7 @@ function renderReceivedData(data) {
             const button = document.createElement('button');
             button.textContent = data.videoQualityOptions[i].qualityLabel;
             button.id = data.videoQualityOptions[i].itag;
+            button.className = data.videoQualityOptions[i].mimeType;
             $('#qualityList').append(button);
         }
 

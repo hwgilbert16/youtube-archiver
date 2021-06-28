@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const ytdl = require('ytdl-core');
 const filterObject = require('filter-obj');
+const ffmpeg = require('ffmpeg-static');
+const cp = require('child_process');
 
 // middleware for getting post data from the body in req
 app.use(bodyParser.urlencoded({extended: false}));
@@ -34,7 +36,7 @@ app.post('/search', (req, res) => {
             // check if it is mp4
             if (filtered.mimeType.includes('video/mp4')) {
                 // add quality to qualityOptions array if matches filter
-                qualityOptions.push({"itag": filtered.itag, "qualityLabel": filtered.qualityLabel});
+                qualityOptions.push({"itag": filtered.itag, "qualityLabel": filtered.qualityLabel, "mimeType": filtered.mimeType});
             }
         }
 
@@ -61,16 +63,62 @@ app.post('/search', (req, res) => {
 app.post('/save', (req, res) => {
     const url = req.body.videoURL;
     const itag = req.body.videoItag;
-    const title = req.body.videoTitle;
+    const title = encodeURI(req.body.videoTitle);
 
     const video = ytdl(url, {quality: itag});
-    video.pipe(fs.createWriteStream('video.mp4'));
+    //video.pipe(fs.createWriteStream('video.mp4'));
 
-    // don't use res.write and just res.json on the end event when the video finishes downloading instead of a progress bar?
+    const audio = ytdl(url, {quality: 'highestaudio', filter: 'audioonly'});
+    //audio.pipe(fs.createWriteStream('audio.mp4'));
 
-    video.on('end', () => {
+    const ffmpegProcess = cp.spawn(ffmpeg, [
+        // Remove ffmpeg's console spamming
+        '-loglevel', '8', '-hide_banner',
+        // Redirect/Enable progress messages
+        '-progress', 'pipe:3',
+        // Set inputs
+        '-i', 'pipe:4',
+        '-i', 'pipe:5',
+        // Map audio & video from streams
+        '-map', '0:a',
+        '-map', '1:v',
+        // Keep encoding
+        '-c:v', 'copy',
+        // Define output file
+        //'out.mkv',
+        `${title}.mkv`
+    ], {
+        windowsHide: true,
+        stdio: [
+            /* Standard: stdin, stdout, stderr */
+            'inherit', 'inherit', 'inherit',
+            /* Custom: pipe:3, pipe:4, pipe:5 */
+            'pipe', 'pipe', 'pipe',
+        ],
+    });
+
+    ffmpegProcess.stdio[3].on('data', chunk => {
+        const lines = chunk.toString().trim().split('\n');
+        const args = {};
+        for (const l of lines) {
+            const [key, value] = l.split('=');
+            args[key.trim()] = value.trim();
+        }
+
+        console.log(args);
+    })
+
+    audio.pipe(ffmpegProcess.stdio[4]);
+    video.pipe(ffmpegProcess.stdio[5]);
+
+    ffmpegProcess.on('close', () => {
         res.json({successfulDownload: true});
     });
+
+    // audio.on('end', () => {
+    //     // send response to browser to know that the download has finished
+    //     res.json({successfulDownload: true});
+    // });
 
 })
 
