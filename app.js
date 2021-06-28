@@ -65,20 +65,13 @@ app.post('/save', (req, res) => {
 
     const video = ytdl(url, {quality: itag});
     video.pipe(fs.createWriteStream('video.mp4'));
-    video.once('response', () => {
-        let starttime = Date.now();
+
+    // don't use res.write and just res.json on the end event when the video finishes downloading instead of a progress bar?
+
+    video.on('end', () => {
+        res.json({successfulDownload: true});
     });
 
-    video.on('progress', (chunkLength, downloaded, total) => {
-        let percent = downloaded / total;
-        percent = percent.toString().slice(0, 5);
-        //res.write(percent);
-        console.log(percent);
-    })
-
-    console.log(req.body);
-
-    res.json({message: 'OK'});
 })
 
 app.listen(3000);

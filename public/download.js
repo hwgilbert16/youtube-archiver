@@ -15,11 +15,26 @@ function addButtonClickHandlers(data) {
                 contentType: 'application/json',
                 dataType: 'json',
                 url: '/save',
-                error: (xhr, status, error) => {
-                    console.log(error);
+                beforeSend: () => {
+                    const loadingGif = new Image();
+                    loadingGif.src = 'loading.gif';
+                    loadingGif.setAttribute('id', 'loadingGif');
+
+                    $("#options").append(loadingGif);
+                    $("#qualityList").remove();
                 },
                 success: (data) => {
+                    $('#loadingGif').remove();
+
+                    const successfulDownload = document.createElement('h3');
+                    successfulDownload.textContent = 'Video downloaded successfully';
+
+                    $('#options').append(successfulDownload);
+                    console.log('Download successful');
                     console.log(data);
+                },
+                error: (xhr, status, error) => {
+                    console.log(error);
                 }
             })
         })

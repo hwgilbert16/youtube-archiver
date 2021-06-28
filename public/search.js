@@ -39,7 +39,8 @@ function renderReceivedData(data) {
         const br = document.createElement('br');
 
         // add horizontal line and download options paragraph
-        $("#qualityList").append(document.createElement('hr'), document.createElement('p').textContent = "Download Options", br);
+        $("#results").append(document.createElement('hr'));
+        $("#qualityList").append(document.createElement('p').textContent = "Download Options", br);
 
         console.dir(data);
 
