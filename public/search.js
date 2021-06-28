@@ -20,8 +20,9 @@ $('#search').submit((e) => {
     });
 });
 
-$(document).ajaxError(() => {
+$(document).ajaxError((e) => {
     console.log('Error encountered');
+    console.log(e);
 })
 
 // renders received data from server
@@ -49,6 +50,8 @@ function renderReceivedData(data) {
             button.id = data.videoQualityOptions[i].itag;
             $('#qualityList').append(button);
         }
+
+        addButtonClickHandlers(data);
     } else {
 
     }

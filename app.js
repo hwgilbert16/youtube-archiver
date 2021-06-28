@@ -36,7 +36,6 @@ app.post('/search', (req, res) => {
                 // add quality to qualityOptions array if matches filter
                 qualityOptions.push({"itag": filtered.itag, "qualityLabel": filtered.qualityLabel});
             }
-
         }
 
         // pack together all of the video info
@@ -44,7 +43,8 @@ app.post('/search', (req, res) => {
             videoTitle: videoDetails.title,
             videoAuthor: videoDetails.author,
             videoThumbnail: videoDetails.thumbnail.thumbnails[videoDetails.thumbnail.thumbnails.length - 1].url,
-            videoQualityOptions: qualityOptions
+            videoQualityOptions: qualityOptions,
+            videoURL: url
         };
 
         res.json(videoInfo);
@@ -53,9 +53,32 @@ app.post('/search', (req, res) => {
             "error": "error_encountered"
         };
 
-        res.json(eMessage)
+        res.json(eMessage);
     });
 
+})
+
+app.post('/save', (req, res) => {
+    const url = req.body.videoURL;
+    const itag = req.body.videoItag;
+    const title = req.body.videoTitle;
+
+    const video = ytdl(url, {quality: itag});
+    video.pipe(fs.createWriteStream('video.mp4'));
+    video.once('response', () => {
+        let starttime = Date.now();
+    });
+
+    video.on('progress', (chunkLength, downloaded, total) => {
+        let percent = downloaded / total;
+        percent = percent.toString().slice(0, 5);
+        //res.write(percent);
+        console.log(percent);
+    })
+
+    console.log(req.body);
+
+    res.json({message: 'OK'});
 })
 
 app.listen(3000);
