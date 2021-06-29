@@ -20,10 +20,6 @@ $('#search').submit((e) => {
     });
 });
 
-$(document).ajaxError(() => {
-    handleError();
-});
-
 /*------------------------*/
 
 function whileLoading() {
@@ -125,7 +121,7 @@ function addButtonClickHandlers(data) {
 
                     $('#options').append(successfulDownload);
                 },
-                error: (xhr, status, error) => {
+                error: () => {
                     handleError();
                 }
             })
@@ -164,3 +160,7 @@ function handleError() {
 
     $("#options").append(errorLine);
 }
+
+$(document).ajaxError(() => {
+    handleError();
+});
