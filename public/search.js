@@ -1,3 +1,4 @@
+// click handler for search button
 $('#search').submit((e) => {
     e.preventDefault();
 
@@ -25,11 +26,36 @@ $(document).ajaxError((e) => {
     console.log(e);
 })
 
+function whileLoading() {
+    // remove previous rendered data if it exists
+    if ($('#successfulDownload')) {
+        $('#results').empty();
+        $('#qualityList').empty();
+        $('#options').empty();
+
+        const ul = document.createElement('ul');
+        ul.id = 'qualityList';
+        $('#options').append(ul);
+    }
+
+    // hides search button
+    $('#searchButton').hide();
+
+    // renders loading gif while video info is loading
+    const loadingGif = new Image(220.5, 145.5);
+    loadingGif.src = 'loading.gif';
+    loadingGif.setAttribute('id', 'loadingGif');
+
+    $("#results").append(loadingGif);
+}
+
 // renders received data from server
 function renderReceivedData(data) {
+    // show search button
     $('#searchButton').show();
 
     if (data.videoThumbnail) {
+
         const img = new Image(640, 360)
         img.src = data.videoThumbnail;
         const title = document.createElement('h3');
@@ -56,21 +82,52 @@ function renderReceivedData(data) {
     }
 }
 
-function whileLoading() {
-    // remove previous rendered data if it exists
-    if ($('hr')) {
-        $('#results').empty();
-        $('#qualityList').empty();
+function addButtonClickHandlers(data) {
+    for (let i = 0; i < data.videoQualityOptions.length; i++) {
+        const itag = data.videoQualityOptions[i].itag;
+        $(`#${itag}`).click(() => {
+            // randomly generate a 10 digit string for the video name
+            // had issues with giving the video title as the file name
+            const videoName = Math.random().toString(20).substr(2, 10);
+
+            const saveData = {
+                videoURL: data.videoURL,
+                videoItag: itag,
+                videoName
+            };
+
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify(saveData),
+                contentType: 'application/json',
+                dataType: 'json',
+                url: '/save',
+                beforeSend: () => {
+                    const videoNameLine = document.createElement('p');
+                    videoNameLine.textContent = `Downloading ${videoName}.mkv`;
+
+                    const loadingGif = new Image(220.5, 145.5);
+                    loadingGif.src = 'loading.gif';
+                    loadingGif.setAttribute('id', 'loadingGif');
+
+                    $("#options").append(videoNameLine, loadingGif);
+                    $("#qualityList").remove();
+                },
+                success: (data) => {
+                    $('#options').empty();
+
+                    const successfulDownload = document.createElement('p');
+                    successfulDownload.textContent = `${videoName}.mkv downloaded successfully`;
+                    successfulDownload.id = 'successfulDownload';
+
+                    $('#options').append(successfulDownload);
+                    console.log('Download successful');
+                    console.log(data);
+                },
+                error: (xhr, status, error) => {
+                    console.log(error);
+                }
+            })
+        })
     }
-
-    // hides search button while video is loading
-
-    $('#searchButton').hide();
-
-    // renders loading gif while video info is loading
-    const loadingGif = new Image(220.5, 145.5);
-    loadingGif.src = 'loading.gif';
-    loadingGif.setAttribute('id', 'loadingGif');
-
-    $("#results").append(loadingGif);
 }
