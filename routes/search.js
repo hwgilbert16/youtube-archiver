@@ -16,7 +16,6 @@ router.post('/', (req, res) => {
         for (let i = 0; i < qualityOptionsRaw.length; i++) {
             // filter response to only include mimeType and qualityLabel
             const filtered = filterObject(qualityOptionsRaw[i], ['mimeType', 'qualityLabel', 'itag']);
-            console.log(filtered.mimeType);
 
             // check if it is mp4
             if (filtered.mimeType.includes('video/mp4') || filtered.mimeType.includes('av01')) {

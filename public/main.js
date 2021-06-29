@@ -24,7 +24,7 @@ $('#search').submit((e) => {
 $(document).ajaxError((e) => {
     console.log('Error encountered');
     console.log(e);
-})
+});
 
 function whileLoading() {
     // remove previous rendered data if it exists
