@@ -16,15 +16,15 @@ $('#search').submit((e) => {
         beforeSend: whileLoading,
         success: renderReceivedData
     }).done(() => {
-        // removes loading gif once data is received
         $('#loadingGif').remove();
     });
 });
 
-$(document).ajaxError((e) => {
-    console.log('Error encountered');
-    console.log(e);
+$(document).ajaxError(() => {
+    handleError();
 });
+
+/*------------------------*/
 
 function whileLoading() {
     // remove previous rendered data if it exists
@@ -33,8 +33,7 @@ function whileLoading() {
         $('#qualityList').empty();
         $('#options').empty();
 
-        const ul = document.createElement('ul');
-        ul.id = 'qualityList';
+        const ul = createSetAttributes('ul', {id: 'qualityList'});
         $('#options').append(ul);
     }
 
@@ -42,26 +41,24 @@ function whileLoading() {
     $('#searchButton').hide();
 
     // renders loading gif while video info is loading
-    const loadingGif = new Image(220.5, 145.5);
-    loadingGif.src = 'loading.gif';
-    loadingGif.setAttribute('id', 'loadingGif');
+    const loadingGif = new Image(220, 145);
+    setAttributes(loadingGif, {src: 'loading.gif', id: 'loadingGif'});
 
     $("#results").append(loadingGif);
 }
 
+/*------------------------*/
+
 // renders received data from server
 function renderReceivedData(data) {
-    // show search button
     $('#searchButton').show();
 
+    // checks whether the response back succeeded
     if (data.videoThumbnail) {
-
-        const img = new Image(640, 360)
-        img.src = data.videoThumbnail;
-        const title = document.createElement('h3');
-        title.textContent = data.videoTitle;
-        const author = document.createElement('p');
-        author.textContent = `Video by ${data.videoAuthor}`;
+        const img = new Image(640, 360);
+        setAttributes(img, {src: data.videoThumbnail});
+        const title = createSetAttributes('h3', {textContent: data.videoTitle})
+        const author = createSetAttributes('p', {textContent: `Video by ${data.videoAuthor}`});
         $("#results").append(img, title, author);
 
         const br = document.createElement('br');
@@ -72,24 +69,30 @@ function renderReceivedData(data) {
 
         // loop to output download options
         for (let i = 0; i < data.videoQualityOptions.length; i++) {
-            const button = document.createElement('button');
-            button.textContent = data.videoQualityOptions[i].qualityLabel;
-            button.id = data.videoQualityOptions[i].itag;
+            const button = createSetAttributes('button', {
+                textContent: data.videoQualityOptions[i].qualityLabel,
+                id: data.videoQualityOptions[i].itag
+            });
             $('#qualityList').append(button);
         }
 
         addButtonClickHandlers(data);
+    } else {
+        handleError();
     }
 }
 
+/*------------------------*/
+
 function addButtonClickHandlers(data) {
+    // randomly generate a 10 digit string for the video name
+    // had issues with giving the video title as the file name
+    const videoName = Math.random().toString(20).substr(2, 10);
+
+    // add click handler to all of the added buttons
     for (let i = 0; i < data.videoQualityOptions.length; i++) {
         const itag = data.videoQualityOptions[i].itag;
         $(`#${itag}`).click(() => {
-            // randomly generate a 10 digit string for the video name
-            // had issues with giving the video title as the file name
-            const videoName = Math.random().toString(20).substr(2, 10);
-
             const saveData = {
                 videoURL: data.videoURL,
                 videoItag: itag,
@@ -103,12 +106,11 @@ function addButtonClickHandlers(data) {
                 dataType: 'json',
                 url: '/save',
                 beforeSend: () => {
-                    const videoNameLine = document.createElement('p');
-                    videoNameLine.textContent = `Downloading ${videoName}.mkv`;
 
-                    const loadingGif = new Image(220.5, 145.5);
-                    loadingGif.src = 'loading.gif';
-                    loadingGif.setAttribute('id', 'loadingGif');
+                    const videoNameLine = createSetAttributes('p', {textContent: `Downloading ${videoName}.mkv`});
+
+                    const loadingGif = new Image(220, 145);
+                    setAttributes(loadingGif, {src: 'loading.Gif', id: 'loadingGif'})
 
                     $("#options").append(videoNameLine, loadingGif);
                     $("#qualityList").remove();
@@ -116,18 +118,49 @@ function addButtonClickHandlers(data) {
                 success: (data) => {
                     $('#options').empty();
 
-                    const successfulDownload = document.createElement('p');
-                    successfulDownload.textContent = `${videoName}.mkv downloaded successfully`;
-                    successfulDownload.id = 'successfulDownload';
+                    const successfulDownload = createSetAttributes('p', {
+                        textContent: `${videoName}.mkv downloaded successfully`,
+                        id: 'successfulDownload'
+                    })
 
                     $('#options').append(successfulDownload);
-                    console.log('Download successful');
-                    console.log(data);
                 },
                 error: (xhr, status, error) => {
-                    console.log(error);
+                    handleError();
                 }
             })
         })
     }
+}
+
+/*------------------------*/
+// Helper functions
+
+function setAttributes(element, attributes) {
+    for(const key in attributes) {
+        element.setAttribute(key, attributes[key]);
+    }
+}
+
+function createSetAttributes(element, attributes) {
+    element = document.createElement(element);
+
+    for(const key in attributes) {
+        if (key === 'textContent') {
+            element.textContent = attributes[key];
+            continue;
+        }
+
+        element.setAttribute(key, attributes[key]);
+    }
+
+    return element;
+}
+
+function handleError() {
+    const errorLine = createSetAttributes('p', {
+        textContent: "We weren't able to find the video or something went wrong. Make sure the video public, the URL is correct, and the URL has an https:// in front of it"
+    });
+
+    $("#options").append(errorLine);
 }
