@@ -106,7 +106,7 @@ function addButtonClickHandlers(data) {
                     const videoNameLine = createSetAttributes('p', {textContent: `Downloading ${videoName}.mkv`});
 
                     const loadingGif = new Image(220, 145);
-                    setAttributes(loadingGif, {src: 'loading.Gif', id: 'loadingGif'})
+                    setAttributes(loadingGif, {src: 'loading.gif', id: 'loadingGif'})
 
                     $("#options").append(videoNameLine, loadingGif);
                     $("#qualityList").remove();

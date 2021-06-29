@@ -4,7 +4,7 @@
   "description": "An easy and quick way to archive YouTube videos through a web interface.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
